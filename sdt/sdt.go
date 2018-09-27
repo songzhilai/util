@@ -1,7 +1,6 @@
 package sdt
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -138,7 +137,6 @@ func (s *Sdt) compress(t string, v float64) {
 	}
 	s.lastReadData.T = t
 	s.lastReadData.V = v
-	fmt.Println(s)
 }
 
 //OutputData 返回压缩后的的结构
