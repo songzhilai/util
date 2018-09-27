@@ -13,8 +13,6 @@ import (
 
 func main() {
 
-	// point := sdt.Point{123, "songzhilai"}
-	// sdt := sdt.NewSdt("1")
 	sdt := sdt.NewSdt("1")
 	sdt.CalculateE(1, 500.5, 1000)
 	for i := 1; i <= 1000; i++ {
