@@ -83,9 +83,7 @@ func NewSdtIndex(id string, compressIndex int) *Sdt {
 
 //CalculateE 设置阀值
 func (s *Sdt) CalculateE(minv, avgv, maxv float64) {
-	max := maxv - avgv
-	min := avgv - minv
-	minE := s.sizeComparison(max, min, "min")
+	minE := s.sizeComparison((maxv - avgv), (avgv - minv), "min")
 	s.E = s.round(minE/10.0, 10)
 	if s.E < 0.00001 {
 		s.E = 0.1
