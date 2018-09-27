@@ -178,7 +178,7 @@ func (s *Sdt) sizeComparison(max, min float64, reuval string) float64 {
 	if reuval == "min" {
 		return min
 	} else if reuval == "max" {
-		return min
+		return max
 	}
 	return 0
 }
