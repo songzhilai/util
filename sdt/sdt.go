@@ -15,18 +15,18 @@ const (
 
 //Sdt 旋转门初始化类
 type Sdt struct {
-	ListPoint []Point
-	E         float64
-	upGate    float64
-	downGate  float64
-	nowUp     float64
-	nowDown   float64
+	// ListPoint []Point
+	E        float64
+	upGate   float64
+	downGate float64
+	nowUp    float64 // 当前数据的上斜率
+	nowDown  float64 // 当前数据的下斜率
 
-	currentData    Point
-	lastReadData   Point
-	lastStoredData Point
+	currentData    Point // 当前数据
+	lastReadData   Point // 当前数据的前一个数据
+	lastStoredData Point // 最近保存的点
 
-	lastStoredT int
+	lastStoredT int // 最近保存数据的时间刻度
 	currentT    int
 
 	listOutPoint   []Point
