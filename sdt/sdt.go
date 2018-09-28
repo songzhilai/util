@@ -182,7 +182,6 @@ func (s *Sdt) OutputData() *[]Point {
 			}
 		}
 	}
-
 	return &s.listOutPoint
 }
 
