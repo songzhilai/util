@@ -22,12 +22,14 @@ func MapSdtClass(id string) *Sdt {
 }
 
 const (
-	MAX_FLOAT         = 3.40282e+038
-	COMPRESS_MIN      = 10
-	COMPRESS_OUT_DATA = 500
+	MAX_FLOAT = 3.40282e+038
+	// COMPRESS_MIN      = 100
+	// COMPRESS_OUT_DATA = 200
+	// COMPRESS_NUMBER   = 10
+	COMPRESS_MIN      = 5
+	COMPRESS_OUT_DATA = 12
+	COMPRESS_NUMBER   = 10
 )
-
-var firstE float64
 
 //Sdt 旋转门初始化类
 type Sdt struct {
@@ -57,6 +59,8 @@ type Sdt struct {
 	listOutPoint []Point
 
 	listFirstPoint []Point
+
+	firstE float64 //第一次阀值
 }
 type Point struct {
 	V float64
@@ -80,8 +84,9 @@ func NewSdt(id string) *Sdt {
 }
 
 //NewSdtIndex 构造函数 初始化SDT类
-func NewSdtIndex(id string, compressIndex int) *Sdt {
+func NewSdtIndex(id string, compressIndex int, firstE float64) *Sdt {
 	var result = new(Sdt)
+	result.firstE = firstE
 	result.compressIndex = compressIndex
 	result.id = id
 	result.upGate = MAX_FLOAT
@@ -103,7 +108,7 @@ func (s *Sdt) CalculateE(minv, avgv, maxv float64) {
 		s.E = 0.1
 	}
 	s.isFirstPoint = true
-	firstE = s.E
+	s.firstE = s.E
 }
 
 //SetE 设置阀值
@@ -130,11 +135,11 @@ func (s *Sdt) InputData(t string, v float64) {
 func (s *Sdt) compress(t string, v float64) {
 	s.currentT++
 	s.nowUp = (v - s.lastStoredData.V - s.E) / float64(s.currentT-s.lastStoredT)
-	if s.nowUp > s.upGate {
+	if s.nowUp > s.upGate { //上升趋势，越大门开得越大
 		s.upGate = s.nowUp
 	}
 	s.nowDown = (v - s.lastStoredData.V + s.E) / float64(s.currentT-s.lastStoredT)
-	if s.nowDown < s.downGate {
+	if s.nowDown < s.downGate { //下降趋势，越小门开得越大
 		s.downGate = s.nowDown
 	}
 	if s.upGate >= s.downGate {
@@ -154,12 +159,11 @@ func (s *Sdt) compress(t string, v float64) {
 func (s *Sdt) OutputData() *[]Point {
 
 	s.listOutPoint = append(s.listOutPoint, s.lastReadData) // 保存最后一个点
-
 	if len(s.listFirstPoint) < s.compressMin {
 		return &s.listFirstPoint
 	} else {
 		if len(s.listOutPoint) > s.compressOutDataMax {
-			if s.compressIndex > 10 { // 限定10次
+			if s.compressIndex > COMPRESS_NUMBER { // 限定10次
 				step := len(s.listOutPoint) / s.compressOutDataMax
 				for k, v := range s.listOutPoint {
 					if k == 0 {
@@ -171,9 +175,9 @@ func (s *Sdt) OutputData() *[]Point {
 				}
 
 			} else {
-
-				s.secondCompressSdt = NewSdtIndex(s.id, s.compressIndex+1)
-				s.secondCompressSdt.SetE(firstE * float64(s.secondCompressSdt.compressIndex))
+				s.secondCompressSdt = NewSdtIndex(s.id, s.compressIndex+1, s.firstE)
+				s.secondCompressSdt.SetE(s.firstE * float64(s.secondCompressSdt.compressIndex))
+				// fmt.Println(s.secondCompressSdt.E, s.secondCompressSdt.compressIndex)
 				// s.secondCompressSdt.SetE(s.E * float64(len(s.listOutPoint)) / float64(s.compressOutDataMax))
 				for _, v := range s.listOutPoint {
 					s.secondCompressSdt.InputData(v.T, v.V)
