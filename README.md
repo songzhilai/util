@@ -8,7 +8,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/songzhilai/util/util/sdt"
+	"github.com/songzhilai/util/sdt"
 )
 
 func main() {
